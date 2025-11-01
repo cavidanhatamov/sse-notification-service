@@ -1,0 +1,894 @@
+{
+    "info": {
+        "_postman_id": "sse-notification-v3",
+        "name": "SSE Notification System (Production-Ready)",
+        "description": "Complete API collection for SSE-based notification system with multi-language support (EN, AZ, RU) - Based on actual MongoDB templates",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:9090",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "user123",
+            "type": "string"
+        },
+        {
+            "key": "template_id",
+            "value": "welcome-email",
+            "type": "string"
+        },
+        {
+            "key": "notification_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "📡 SSE Real-Time Streaming",
+            "item": [
+                {
+                    "name": "Subscribe (Azerbaijani - Default)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "text/event-stream"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az",
+                                "description": "Default language"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/subscribe/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "subscribe",
+                                "{{user_id}}"
+                            ]
+                        },
+                        "description": "🔄 Real-time SSE stream for notifications in Azerbaijani\n\n**Features:**\n- Single active connection per user\n- Auto-reconnection support\n- Multi-language content\n- Reactive backpressure handling"
+                    }
+                },
+                {
+                    "name": "Subscribe (English)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "text/event-stream"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "en"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/subscribe/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "subscribe",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Subscribe (Russian)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "text/event-stream"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ru"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/subscribe/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "subscribe",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Unsubscribe",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/unsubscribe/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "unsubscribe",
+                                "{{user_id}}"
+                            ]
+                        },
+                        "description": "🚫 Manually close SSE connection"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📬 Send Notifications (Based on Templates)",
+            "item": [
+                {
+                    "name": "1️⃣ Welcome Email",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"notification_id\", response.id);",
+                                    "    console.log(\"✅ Notification ID:\", response.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"welcome-email\",\n  \"userId\": \"{{user_id}}\",\n  \"channel\": \"EMAIL\",\n  \"priority\": \"NORMAL\",\n  \"params\": {\n    \"userName\": \"Javidan Hatamov\",\n    \"activationLink\": \"https://example.com/activate/abc123\"\n  },\n  \"metadata\": {\n    \"ip\": \"192.168.1.100\",\n    \"userAgent\": \"Chrome/120.0\"\n  },\n  \"sourceSystem\": \"user-registration-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        },
+                        "description": "**Template:** `welcome-email`\n\n**Parameters:**\n- `userName` (required): User's full name\n- `activationLink` (required): Account activation URL"
+                    }
+                },
+                {
+                    "name": "2️⃣ Password Reset",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "en"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"password-reset\",\n  \"userId\": \"{{user_id}}\",\n  \"channel\": \"EMAIL\",\n  \"priority\": \"HIGH\",\n  \"params\": {\n    \"userName\": \"Javidan\",\n    \"resetLink\": \"https://example.com/reset-password/xyz789\",\n    \"expiryTime\": \"24 hours\"\n  },\n  \"sourceSystem\": \"auth-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        },
+                        "description": "**Template:** `password-reset`\n\n**Parameters:**\n- `userName` (required): User's full name\n- `resetLink` (required): Password reset URL\n- `expiryTime` (optional): Link expiry time"
+                    }
+                },
+                {
+                    "name": "3️⃣ Order Confirmation",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"order-confirmation\",\n  \"userId\": \"{{user_id}}\",\n  \"channel\": \"EMAIL\",\n  \"priority\": \"NORMAL\",\n  \"params\": {\n    \"userName\": \"Javidan Hatamov\",\n    \"orderId\": \"ORD-2024-00123\",\n    \"orderTotal\": \"150.00 AZN\",\n    \"trackingLink\": \"https://example.com/track/ORD-2024-00123\"\n  },\n  \"metadata\": {\n    \"orderId\": \"ORD-2024-00123\",\n    \"paymentMethod\": \"Card\"\n  },\n  \"sourceSystem\": \"order-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        },
+                        "description": "**Template:** `order-confirmation`\n\n**Parameters:**\n- `userName` (required): Customer name\n- `orderId` (required): Order ID\n- `orderTotal` (required): Total order amount\n- `trackingLink` (optional): Order tracking URL"
+                    }
+                },
+                {
+                    "name": "4️⃣ System Alert (PUSH)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ru"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"system-alert\",\n  \"userId\": \"{{user_id}}\",\n  \"channel\": \"PUSH\",\n  \"priority\": \"URGENT\",\n  \"params\": {\n    \"alertType\": \"WARNING\",\n    \"message\": \"Your account will expire in 3 days. Please renew your subscription.\"\n  },\n  \"sourceSystem\": \"monitoring-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        },
+                        "description": "**Template:** `system-alert`\n\n**Parameters:**\n- `alertType` (required): Type of alert (INFO, WARNING, ERROR)\n- `message` (required): Alert message"
+                    }
+                },
+                {
+                    "name": "5️⃣ Payment Success (SMS)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"payment-success-sms\",\n  \"userId\": \"{{user_id}}\",\n  \"channel\": \"SMS\",\n  \"priority\": \"HIGH\",\n  \"params\": {\n    \"amount\": \"250.00 AZN\",\n    \"transactionId\": \"TXN-2024-456789\"\n  },\n  \"metadata\": {\n    \"paymentGateway\": \"Stripe\",\n    \"cardLast4\": \"4242\"\n  },\n  \"sourceSystem\": \"payment-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        },
+                        "description": "**Template:** `payment-success-sms`\n\n**Parameters:**\n- `amount` (required): Payment amount\n- `transactionId` (required): Transaction ID"
+                    }
+                },
+                {
+                    "name": "6️⃣ New Message (PUSH)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "en"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"new-message\",\n  \"userId\": \"{{user_id}}\",\n  \"channel\": \"PUSH\",\n  \"priority\": \"NORMAL\",\n  \"params\": {\n    \"senderName\": \"Alice Johnson\",\n    \"messagePreview\": \"Hey! Are you available for a quick call?\"\n  },\n  \"metadata\": {\n    \"conversationId\": \"conv-123\",\n    \"senderId\": \"user456\"\n  },\n  \"sourceSystem\": \"chat-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        },
+                        "description": "**Template:** `new-message`\n\n**Parameters:**\n- `senderName` (required): Sender's name\n- `messagePreview` (required): Message preview text"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📋 Get Notifications",
+            "item": [
+                {
+                    "name": "Get All Notifications",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Unread Only",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}?read=false",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "read",
+                                    "value": "false"
+                                }
+                            ]
+                        },
+                        "description": "Filter only unread notifications"
+                    }
+                },
+                {
+                    "name": "Get by Channel (EMAIL)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}?channel=EMAIL",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "channel",
+                                    "value": "EMAIL"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get by Priority (HIGH)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}?priority=HIGH",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "priority",
+                                    "value": "HIGH"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get with Pagination",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}?page=0&size=10&sortBy=timestamps.createdAt&sortDirection=DESC",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "timestamps.createdAt"
+                                },
+                                {
+                                    "key": "sortDirection",
+                                    "value": "DESC"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Single Notification",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/notification/{{notification_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "notification",
+                                "{{notification_id}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "✏️ Update Notifications",
+            "item": [
+                {
+                    "name": "Mark as Read",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/notification/{{notification_id}}/read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "notification",
+                                "{{notification_id}}",
+                                "read"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mark All as Read",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}/mark-all-read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}",
+                                "mark-all-read"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Disable All (Soft Delete)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/{{user_id}}/disable-all",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "{{user_id}}",
+                                "disable-all"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📝 Template Management",
+            "item": [
+                {
+                    "name": "Get All Templates",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/templates",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "templates"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Active Templates",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/templates/active",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "templates",
+                                "active"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Template by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/templates/{{template_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "templates",
+                                "{{template_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search by Name",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/templates/name/welcome",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "templates",
+                                "name",
+                                "welcome"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create New Template",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"template_id\", response.id);",
+                                    "    console.log(\"✅ Template ID:\", response.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id\": \"account-verified\",\n  \"name\": \"Account Verified\",\n  \"description\": \"Sent when user verifies their account\",\n  \"channel\": \"EMAIL\",\n  \"active\": true,\n  \"translations\": {\n    \"en\": {\n      \"subject\": \"Account Verified - ${userName}\",\n      \"content\": \"Congratulations ${userName}! Your account has been successfully verified. You can now access all features.\"\n    },\n    \"az\": {\n      \"subject\": \"Hesab Təsdiqləndi - ${userName}\",\n      \"content\": \"Təbriklər ${userName}! Hesabınız uğurla təsdiqləndi. İndi bütün funksiyalardan istifadə edə bilərsiniz.\"\n    },\n    \"ru\": {\n      \"subject\": \"Аккаунт подтвержден - ${userName}\",\n      \"content\": \"Поздравляем ${userName}! Ваш аккаунт успешно подтвержден. Теперь вы можете получить доступ ко всем функциям.\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/templates",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "templates"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Template",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Welcome Email (Updated)\",\n  \"description\": \"Updated welcome email with new branding\",\n  \"channel\": \"EMAIL\",\n  \"active\": true,\n  \"translations\": {\n    \"en\": {\n      \"subject\": \"Welcome aboard, ${userName}!\",\n      \"content\": \"Hi ${userName}, welcome to our platform! Activate your account: ${activationLink}\"\n    },\n    \"az\": {\n      \"subject\": \"Xoş gəldiniz, ${userName}!\",\n      \"content\": \"Salam ${userName}, platformamıza xoş gəldiniz! Hesabınızı aktivləşdirin: ${activationLink}\"\n    },\n    \"ru\": {\n      \"subject\": \"Добро пожаловать, ${userName}!\",\n      \"content\": \"Привет ${userName}, добро пожаловать! Активируйте аккаунт: ${activationLink}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/templates/{{template_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "templates",
+                                "{{template_id}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🧪 Testing & Debugging",
+            "item": [
+                {
+                    "name": "Test Multi-Tab (Connection 1)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "text/event-stream"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/subscribe/test-multi-tab-user",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "subscribe",
+                                "test-multi-tab-user"
+                            ]
+                        },
+                        "description": "🔍 First connection - should be closed when Connection 2 opens"
+                    }
+                },
+                {
+                    "name": "Test Multi-Tab (Connection 2)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "text/event-stream"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/subscribe/test-multi-tab-user",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "subscribe",
+                                "test-multi-tab-user"
+                            ]
+                        },
+                        "description": "🔍 Second connection - should automatically close Connection 1"
+                    }
+                },
+                {
+                    "name": "Send Test Notification",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "az"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"templateId\": \"system-alert\",\n  \"userId\": \"test-multi-tab-user\",\n  \"channel\": \"PUSH\",\n  \"priority\": \"HIGH\",\n  \"params\": {\n    \"alertType\": \"INFO\",\n    \"message\": \"This is a test notification for multi-tab testing\"\n  },\n  \"sourceSystem\": \"test-service\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/learn-sse/notifications/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "learn-sse",
+                                "notifications",
+                                "send"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

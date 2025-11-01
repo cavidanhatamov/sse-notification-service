@@ -1,0 +1,71 @@
+server:
+  port: ${SERVER_PORT:8080}
+  # Optimized for 2000+ concurrent SSE connections
+  netty:
+    # Increase connection queue size for stability
+    connection-timeout: 45s
+# Direct API Configuration (No Kafka)
+spring:
+  # Global base path for all endpoints
+  webflux:
+    base-path: /api/v1/learn-sse
+
+  # MongoDB Configuration - Optimized for 2000+ users
+  data:
+    mongodb:
+      # MongoDB URI constructed from environment variables (NO defaults - must be provided)
+      uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=${MONGO_AUTH_DATABASE}&maxPoolSize=${MONGO_MAX_POOL_SIZE}&minPoolSize=${MONGO_MIN_POOL_SIZE}&maxIdleTimeMS=${MONGO_MAX_IDLE_TIME}&serverSelectionTimeoutMS=${MONGO_SERVER_SELECTION_TIMEOUT}
+      database: ${MONGO_DATABASE}
+
+  # Disable embedded MongoDB since we use external MongoDB
+  autoconfigure:
+    exclude:
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:notification-request-consumer}
+      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.learn.dto.NotificationRequestDTO
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+app:
+  sse:
+    # SSE Connection timeout settings (in seconds)
+    max-connection-duration: ${SSE_MAX_CONNECTION_DURATION:90}
+    connection-timeout: ${SSE_CONNECTION_TIMEOUT:60}
+
+  # Kafka topics configuration
+  kafka:
+    topics:
+      notification-requests: ${KAFKA_TOPIC_NOTIFICATION_REQUESTS:backoffice-notification-requests}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:notification-request-consumer}
+# Logging optimized for production with 2000 users
+logging:
+  level:
+    com.learn: INFO
+    reactor.netty: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Monitoring for 2000 concurrent connections
+javamelody:
+  spring-monitoring-enabled: true
+
+# Additional production settings for 2000 users
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

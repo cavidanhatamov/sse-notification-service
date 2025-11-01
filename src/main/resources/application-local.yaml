@@ -1,0 +1,53 @@
+# Local Development Environment Configuration
+
+# Local development server settings
+server:
+  port: ${SERVER_PORT:9090}
+
+# Local development logging (more verbose for debugging)
+logging:
+  level:
+    reactor.netty: INFO
+    org.springframework.data.mongodb: DEBUG
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Local development optimizations (lower resource usage)
+spring:
+  data:
+    mongodb:
+      # Direct MongoDB connection for local development (Should be replicated DB because of change stream)
+      uri: mongodb://localhost:27017/notifications-db?maxPoolSize=20&minPoolSize=5&maxIdleTimeMS=30000&serverSelectionTimeoutMS=5000
+      database: notifications-db
+
+  # Kafka configuration for notification request processing
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-request-consumer
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.learn.dto.NotificationRequestDTO
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+# Local development settings
+app:
+  sse:
+    max-connection-duration: ${SSE_MAX_CONNECTION_DURATION:60}  # 1 minute - matches production
+    connection-timeout: ${SSE_CONNECTION_TIMEOUT:10}            # 90 seconds - allows graceful reconnection
+
+  # Kafka topics configuration
+  kafka:
+    topics:
+      notification-requests: backoffice-notification-requests  # Input topic for creating notifications via Kafka
+    consumer:
+      group-id: notification-request-consumer  # Consumer group ID for processing notification requests
+
